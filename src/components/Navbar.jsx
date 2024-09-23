@@ -17,20 +17,11 @@ export default function Navbar({ handleDarkMode, Mode }) {
       </Link>
       <div className="w-1/2 flex items-center justify-evenly">
         <ul
-          className={`flex flex-col justify-evenly md:h-auto h-[50vh] items-center z-10 md:flex-row md:items-center md:justify-evenly md:grow md:static absolute top-[15vh] ${
+          className={`flex flex-col justify-evenly md:h-auto h-[50vh] items-center z-10 md:flex-row md:items-center md:justify-end md:grow md:static absolute top-[15vh] ${
             showMenu ? `translate-x-0` : `-translate-x-[100vw] `
           } md:translate-x-0 left-0 transition-transform rounded-xl border-2 md:drop-shadow-none drop-shadow-xl dark:border-light border-dark md:border-none duration-300 w-full dark:bg-dark bg-light`}
         >
-          <li className="hover:border-b-dark dark:hover:border-b-light hover:border-b-2 cursor-pointer border-spacing-2">
-            Loaders
-          </li>
-          <li className="hover:border-b-dark dark:hover:border-b-light hover:border-b-2 cursor-pointer border-spacing-2">
-            Cards
-          </li>
-          <li className="hover:border-b-dark dark:hover:border-b-light hover:border-b-2 cursor-pointer border-spacing-2">
-            CheckBox
-          </li>
-          <li className=" cursor-pointer border-spacing-2">
+          <li className=" cursor-pointer border-spacing-2 mx-5">
             <LoginButton currentUser={currentUser} />
           </li>
         </ul>

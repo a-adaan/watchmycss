@@ -8,6 +8,7 @@ import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import "react-toastify/dist/ReactToastify.css";
 import ProfilePage from "./pages/ProfilePage.jsx";
+import { cardLoader } from "./components/Cards.jsx";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
       {
         path: "",
         element: <HomePage />,
+        loader: cardLoader,
       },
       {
         path: "login",
