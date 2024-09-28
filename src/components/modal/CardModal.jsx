@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import CodeEditor from "./CodeEditor";
 import Demo from "./Demo";
 import { useAuth } from "../../assets/AuthContext";
-import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../assets/firebase";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -38,6 +38,7 @@ export default function CardModal({ inCreateBtn = false, inEdit, card }) {
 
   async function handleBtn() {
     const regex = /^[a-zA-Z]+[0-9]+$/;
+
     if (!regex.test(cardName)) {
       toast.warn("Enter the correct Card name. e.g. design123, name456", {
         position: "top-center",
@@ -52,10 +53,29 @@ export default function CardModal({ inCreateBtn = false, inEdit, card }) {
           cssCode: css,
           userName: currentUser?.nickName,
         };
+
         if (inEdit) {
-          // Update the existing card
-          const cardRef = doc(db, "designCard", card.cardName); // Use original card name
-          await updateDoc(cardRef, {
+          // Check if the user is trying to change the card name
+          if (cardName !== card.cardName) {
+            // Check if the new card name already exists
+            const cardRef = doc(db, "designCard", cardName);
+            const cardSnap = await getDoc(cardRef);
+
+            if (cardSnap.exists()) {
+              toast.warn(
+                "Card name already exists. Please choose a different name.",
+                {
+                  position: "top-center",
+                  autoClose: 2500,
+                }
+              );
+              return; // Stop the execution
+            }
+          }
+
+          // Update the existing card (either with or without cardName change)
+          const originalCardRef = doc(db, "designCard", card.cardName); // Use original card name
+          await updateDoc(originalCardRef, {
             htmlCode: html,
             cssCode: css,
             cardName: cardName, // Optional: If you want to allow card name change
@@ -65,16 +85,34 @@ export default function CardModal({ inCreateBtn = false, inEdit, card }) {
             autoClose: 2500,
           });
         } else {
-          // Create a new card
-          await setDoc(doc(db, "designCard", cardName), modalData);
-          toast.success("Card created successfully", {
-            position: "top-center",
-            autoClose: 2500,
-          });
+          // For creating a new card
+          const cardRef = doc(db, "designCard", cardName);
+          const cardSnap = await getDoc(cardRef);
+
+          if (cardSnap.exists()) {
+            toast.warn(
+              "Card name already exists. Please choose a different name.",
+              {
+                position: "top-center",
+                autoClose: 2500,
+              }
+            );
+          } else {
+            await setDoc(cardRef, modalData);
+            toast.success("Card created successfully", {
+              position: "top-center",
+              autoClose: 2500,
+            });
+          }
         }
-        navigate(0);
+
+        navigate(0); // Refresh the page
       } catch (error) {
         console.log(error.message);
+        toast.error("An error occurred. Please try again.", {
+          position: "top-center",
+          autoClose: 2500,
+        });
       }
     }
   }
